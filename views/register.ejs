@@ -1,0 +1,8 @@
+<section class="auth card"><h1>Create Account</h1>
+<% if (error) { %><div class="error"><%= error %></div><% } %>
+<form method="POST" class="stack">
+<label>Name</label><input name="name" required>
+<label>Email</label><input name="email" type="email" required>
+<label>Password</label><input name="password" type="password" required>
+<button>Create Account</button>
+</form></section>

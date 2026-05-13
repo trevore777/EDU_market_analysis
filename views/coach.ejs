@@ -1,0 +1,3 @@
+<section class="page-head"><h1>AI Coach</h1><p>Ask for a review of your sandbox portfolio or advice on practising better decisions.</p></section>
+<form class="coach-form" method="POST"><textarea name="question" rows="4" placeholder="Example: review my sandbox portfolio"><%= question %></textarea><button>Ask Coach</button></form>
+<% if (answer) { %><section class="card coach-answer"><h2><%= answer.title %></h2><p class="lede"><%= answer.summary %></p><ul><% answer.points.forEach(p => { %><li><%= p %></li><% }) %></ul><p class="disclaimer">Educational information only. Not personal financial advice.</p></section><% } %>

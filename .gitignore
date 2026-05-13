@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Vercel
+.vercel/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# macOS
+.DS_Store
+
+# Build output
+dist/
+build/
+coverage/
+
+# SQLite / local DB files
+*.sqlite
+*.sqlite3
+db/*.sqlite
+db/*.sqlite3
+
+# Temporary files
+tmp/
+temp/
+
+# IDE files
+.vscode/
+.idea/
+
+# Optional uploads/cache
+uploads/
+.cache/
+
+# OS generated
+Thumbs.db
