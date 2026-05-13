@@ -68,3 +68,18 @@ COOKIE_SECRET
 This is a sandbox simulation. It does not place real trades and does not provide personal financial advice.
 
 The chart data is currently generated sample-history data based on the app's sample prices. Later, this can be replaced with live historical data from Finnhub, Twelve Data, Alpha Vantage, Polygon, or another market-data provider.
+
+
+## Vercel install fix
+
+This version pins Node to 20.x in `package.json` and uses a simplified `vercel.json`.
+
+If Vercel still fails during dependency install:
+
+1. Delete Vercel build cache and redeploy.
+2. In Vercel Project Settings, set Node.js Version to 20.x.
+3. Make sure these Environment Variables are set:
+   - TURSO_DATABASE_URL
+   - TURSO_AUTH_TOKEN
+   - COOKIE_SECRET
+4. Do not commit `.env`.
