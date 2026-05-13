@@ -8,6 +8,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { migrate, one, run } from "./db/db.js";
 import { loadStocks, sandboxStats, buyPaperTrade, sellPaperTrade, resetSandbox, ensurePaperAccount, coachResponse } from "./services/appService.js";
+import { buildPriceHistory, buildPortfolioHistory, buildTradeMarkers } from "./services/chartService.js";
 
 dotenv.config();
 
@@ -155,6 +156,21 @@ app.post("/coach", requireLogin, async (req, res) => {
   const stats = await sandboxStats(req.user.id);
   const answer = coachResponse(req.body.question || "", stats);
   res.render("coach", { title: "AI Coach", answer, question: req.body.question || "" });
+});
+
+
+app.get("/api/chart/stock/:symbol", async (req, res) => {
+  const points = buildPriceHistory(req.params.symbol, 90);
+  if (!points.length) return res.status(404).json({ error: "Stock not found" });
+  res.json({ symbol: req.params.symbol, points });
+});
+
+app.get("/api/chart/sandbox", requireLogin, async (req, res) => {
+  const stats = await sandboxStats(req.user.id);
+  res.json({
+    points: buildPortfolioHistory(stats, 90),
+    markers: buildTradeMarkers(stats.trades)
+  });
 });
 
 app.get("/simulator", (req, res) => res.render("simulator", { title: "Simulator" }));

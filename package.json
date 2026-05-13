@@ -1,7 +1,7 @@
 {
-  "name": "simple-shares-app-stage7",
-  "version": "7.0.0",
-  "description": "Simple Shares App Stage 7 - Turso and Vercel ready",
+  "name": "simple-shares-app-stage8",
+  "version": "8.0.0",
+  "description": "Simple Shares App Stage 8 - charts and graphing",
   "type": "module",
   "main": "server.js",
   "scripts": {

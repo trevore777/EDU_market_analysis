@@ -15,3 +15,11 @@
 <% [["Quality", stock.quality], ["Value", stock.value], ["Momentum", stock.momentum], ["Income", stock.income]].forEach(item => { %>
 <div class="bar-row"><span><%= item[0] %></span><div class="bar"><i style="width:<%= item[1] %>%"></i></div><b><%= item[1] %></b></div>
 <% }) %></div></section>
+
+<section class="card">
+  <h2>Price History Graph</h2>
+  <p class="hint">Sample history chart. Later this can use live historical data from a market-data API.</p>
+  <div class="chart-wrap">
+    <canvas id="stockChart" width="900" height="320" data-symbol="<%= stock.symbol %>"></canvas>
+  </div>
+</section>

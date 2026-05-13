@@ -1,20 +1,20 @@
-# Simple Shares App - Stage 7
+# Simple Shares App - Stage 8
 
-Stage 7 converts the app from local SQLite to Turso/libSQL so it can deploy properly on Vercel.
+Stage 8 adds charts and graphing to the Turso/Vercel-ready sandbox app.
 
 ## Features
 
-- Vercel-ready Express export
+- Vercel-ready Express app
 - Turso/libSQL database
-- Automatic schema migration
-- Demo user creation
 - Login/register
 - Sandbox paper trading
 - Virtual cash
 - Fake buy/sell trades
 - Persistent paper holdings
 - Trade history
-- AI coach prototype
+- Share price history charts
+- Sandbox portfolio value chart
+- Fake trade markers on charts
 - Health endpoint at `/health`
 
 ## Local setup
@@ -63,24 +63,8 @@ TURSO_AUTH_TOKEN
 COOKIE_SECRET
 ```
 
-Then deploy from GitHub or run:
-
-```bash
-vercel
-```
-
-## Turso CLI quick commands
-
-```bash
-brew install tursodatabase/tap/turso
-turso auth signup
-turso db create simple-shares
-turso db show simple-shares
-turso db tokens create simple-shares
-```
-
-Use the database URL and token in Vercel.
-
 ## Important
 
 This is a sandbox simulation. It does not place real trades and does not provide personal financial advice.
+
+The chart data is currently generated sample-history data based on the app's sample prices. Later, this can be replaced with live historical data from Finnhub, Twelve Data, Alpha Vantage, Polygon, or another market-data provider.
