@@ -1,10 +1,23 @@
-<section class="page-head"><h1>Ratings</h1><p>Use ratings to choose what to research or practise with in the sandbox.</p></section>
+<section class="page-head">
+  <h1>Ratings</h1>
+  <p>Search the sample database and use ratings to choose what to research or practise with in the sandbox.</p>
+</section>
+
+<form method="GET" action="/stocks" class="search-line">
+  <input name="q" value="<%= q || '' %>" placeholder="Search VAS, Tesla, Apple, ETF, bank...">
+  <button>Search</button>
+</form>
+
 <% if (message) { %><div class="success"><%= message %></div><% } %>
+
 <div class="table-card"><table><thead><tr><th>Code</th><th>Name</th><th>Rating</th><th>Signal</th><th>Risk</th><th>Action</th></tr></thead><tbody>
 <% stocks.forEach(s => { %><tr>
 <td><strong><%= s.symbol %></strong></td><td><%= s.name %><br><small><%= s.sector %></small></td>
 <td><span class="score <%= s.rating >= 85 ? 'good' : s.rating >= 70 ? 'watch' : 'risk' %>"><%= s.rating %></span></td>
 <td><%= s.signal %></td><td><%= s.risk %></td>
-<td class="row-actions"><a class="small-button" href="/stock/<%= s.symbol %>">View</a><% if (user) { %><a class="small-button alt" href="/sandbox">Trade fake</a><% } %></td>
+<td class="row-actions">
+  <a class="small-button" href="/stock/<%= s.symbol %>">View</a>
+  <% if (user) { %><a class="small-button alt" href="/search?symbol=<%= s.symbol %>&q=<%= s.symbol %>">Ask AI</a><% } %>
+</td>
 </tr><% }) %>
 </tbody></table></div>

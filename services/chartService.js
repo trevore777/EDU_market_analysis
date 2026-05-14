@@ -33,7 +33,6 @@ export function buildPriceHistory(symbol, days = 90) {
     });
   }
 
-  // Anchor the last point close to the current sample price.
   const factor = stock.price / points[points.length - 1].price;
   return points.map(p => ({
     date: p.date,

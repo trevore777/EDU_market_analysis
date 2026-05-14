@@ -1,13 +1,16 @@
 {
-  "name": "simple-shares-app-stage8-vercel-fix",
-  "version": "8.0.1",
-  "description": "Simple Shares App Stage 8 - charts and graphing",
+  "name": "simple-shares-app-stage9-full",
+  "version": "9.0.0",
+  "description": "Simple Shares App Stage 9 - search, guided AI prompts, sandbox trading, charts, Turso/Vercel ready",
   "type": "module",
   "main": "server.js",
   "scripts": {
     "dev": "node server.js",
     "start": "node server.js",
     "build": "echo \"No build step required\""
+  },
+  "engines": {
+    "node": "20.x"
   },
   "dependencies": {
     "@libsql/client": "^0.15.15",
@@ -17,11 +20,5 @@
     "ejs": "^3.1.10",
     "express": "^4.21.2",
     "express-ejs-layouts": "^2.5.1"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.9"
-  },
-  "engines": {
-    "node": "20.x"
   }
 }

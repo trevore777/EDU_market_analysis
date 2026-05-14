@@ -1,0 +1,89 @@
+<section class="page-head">
+  <h1>Search Shares + Guided AI Questions</h1>
+  <p>Use the dropdown prompts if you are not sure what to ask. This helps beginners focus on risk, value, diversification and goals.</p>
+</section>
+
+<section class="grid two">
+  <div class="card">
+    <h2>1. Search for a share or ETF</h2>
+    <form method="GET" action="/search" class="stack">
+      <label>Search</label>
+      <input name="q" value="<%= q || '' %>" placeholder="Example: Tesla, VAS, Apple, Berkshire, ETF">
+      <button>Search</button>
+    </form>
+
+    <div class="search-results">
+      <% if (!results.length) { %>
+        <p>No results found in the sample database. Live external search can be added next with Finnhub or Twelve Data.</p>
+      <% } %>
+      <% results.slice(0, 12).forEach(s => { %>
+        <div class="result-card">
+          <div>
+            <strong><%= s.symbol %></strong>
+            <small><%= s.name %> — <%= s.sector %></small>
+          </div>
+          <span class="score <%= s.rating >= 85 ? 'good' : s.rating >= 70 ? 'watch' : 'risk' %>"><%= s.rating %></span>
+          <a class="small-button" href="/search?q=<%= encodeURIComponent(q || s.symbol) %>&symbol=<%= s.symbol %>">Select</a>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2. Ask a guided AI question</h2>
+    <form method="POST" action="/search/ask" class="stack">
+      <input type="hidden" name="q" value="<%= q || '' %>">
+
+      <label>Main share</label>
+      <select name="symbol">
+        <% stocks.forEach(s => { %>
+          <option value="<%= s.symbol %>" <%= symbol === s.symbol ? "selected" : "" %>><%= s.symbol %> — <%= s.name %></option>
+        <% }) %>
+      </select>
+
+      <label>Question prompt</label>
+      <select name="promptId" id="promptSelect">
+        <% prompts.forEach(p => { %>
+          <option value="<%= p.id %>" <%= selectedPrompt === p.id ? "selected" : "" %>><%= p.category %>: <%= p.label %></option>
+        <% }) %>
+      </select>
+
+      <label>Compare with, optional</label>
+      <select name="compareSymbol">
+        <option value="">No comparison</option>
+        <% stocks.forEach(s => { %>
+          <option value="<%= s.symbol %>" <%= compareSymbol === s.symbol ? "selected" : "" %>><%= s.symbol %> — <%= s.name %></option>
+        <% }) %>
+      </select>
+
+      <button>Ask AI</button>
+    </form>
+
+    <% if (symbol) { %>
+      <form method="POST" action="/watchlist/add" class="compact-form">
+        <input type="hidden" name="symbol" value="<%= symbol %>">
+        <button class="secondary">Add selected share to Watchlist</button>
+      </form>
+
+      <form method="POST" action="/sandbox/buy" class="stack mini-trade">
+        <input type="hidden" name="symbol" value="<%= symbol %>">
+        <label>Fake buy units</label>
+        <input name="units" type="number" step="0.0001" value="1">
+        <label>Reason</label>
+        <input name="reason" value="Testing idea from guided AI prompt">
+        <button>Fake Buy Selected Share</button>
+      </form>
+    <% } %>
+  </div>
+</section>
+
+<% if (answer) { %>
+<section class="card coach-answer">
+  <h2><%= answer.title %></h2>
+  <p class="lede"><%= answer.summary %></p>
+  <ul>
+    <% answer.points.forEach(p => { %><li><%= p %></li><% }) %>
+  </ul>
+  <p class="disclaimer">Educational information only. Not personal financial advice.</p>
+</section>
+<% } %>
