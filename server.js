@@ -1,3 +1,9 @@
+console.log("BOOT: server.js started");
+console.log("PORT:", process.env.PORT);
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("TURSO_DATABASE_URL exists:", !!process.env.TURSO_DATABASE_URL);
+console.log("TURSO_AUTH_TOKEN exists:", !!process.env.TURSO_AUTH_TOKEN);
+
 
 import express from "express";
 import expressLayouts from "express-ejs-layouts";
@@ -29,9 +35,9 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const COOKIE_SECRET = process.env.COOKIE_SECRET || "dev_secret_change_me";
 
-let migrationPromise = migrate().catch((err) => {
-  console.error("Database migration failed:", err);
-});
+let migrationPromise = Promise.resolve();
+console.log("TEMP: migration bypassed");
+
 
 async function ready(req, res, next) {
   try {
