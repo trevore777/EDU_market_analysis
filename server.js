@@ -1,10 +1,3 @@
-console.log("BOOT: server.js started");
-console.log("PORT:", process.env.PORT);
-console.log("NODE_ENV:", process.env.NODE_ENV);
-console.log("TURSO_DATABASE_URL exists:", !!process.env.TURSO_DATABASE_URL);
-console.log("TURSO_AUTH_TOKEN exists:", !!process.env.TURSO_AUTH_TOKEN);
-
-
 import express from "express";
 import expressLayouts from "express-ejs-layouts";
 import cookieParser from "cookie-parser";
@@ -26,6 +19,13 @@ import {
   buildGuidedAnswer
 } from "./services/appService.js";
 import { buildPriceHistory, buildPortfolioHistory, buildTradeMarkers } from "./services/chartService.js";
+
+console.log("BOOT: server.js started");
+console.log("PORT:", process.env.PORT);
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("TURSO_DATABASE_URL exists:", !!process.env.TURSO_DATABASE_URL);
+console.log("TURSO_AUTH_TOKEN exists:", !!process.env.TURSO_AUTH_TOKEN);
+
 
 dotenv.config();
 
@@ -58,6 +58,10 @@ app.use(express.json());
 app.use(cookieParser(COOKIE_SECRET));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(ready);
+
+app.get("/ping", (req, res) => {
+  res.status(200).send("pong");
+});
 
 async function currentUser(req) {
   const id = req.signedCookies.user_id;
@@ -258,7 +262,9 @@ app.use((err, req, res, next) => {
 });
 
 if (process.env.VERCEL !== "1") {
-  app.listen(PORT, () => console.log(`Simple Shares Stage 9 running on http://localhost:${PORT}`));
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`BOOT OK: Server running on 0.0.0.0:${PORT}`);
+  });
 }
 
 export default app;
