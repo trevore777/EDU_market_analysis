@@ -7,16 +7,13 @@
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="/">Simple Shares <span>Stage 9</span></a>
+  <a class="brand" href="/">Simple Shares <span>Stage 8</span></a>
   <nav>
     <a href="/stocks">Ratings</a>
-    <% if (user) { %>
-      <a href="/search">Search + AI</a>
-      <a href="/sandbox">Sandbox</a>
-      <a href="/coach">AI Coach</a>
-    <% } %>
     <a href="/simulator">Simulator</a>
     <% if (user) { %>
+      <a href="/sandbox">Sandbox</a>
+      <a href="/coach">AI Coach</a>
       <form method="POST" action="/logout" class="inline"><button class="linkbtn">Logout</button></form>
     <% } else { %>
       <a href="/login">Login</a>
@@ -24,7 +21,7 @@
     <% } %>
   </nav>
 </header>
-<div class="sandbox-banner">SANDBOX MODE: fake money, fake trades, educational simulation only. Search and guided AI prompts enabled.</div>
+<div class="sandbox-banner">SANDBOX MODE: fake money, fake trades, educational simulation only. Turso database ready. Charts enabled.</div>
 <main class="container"><%- body %></main>
 <footer class="footer">Educational prototype only. No real trades are placed. Not personal financial advice.</footer>
 <script src="/js/app.js"></script>

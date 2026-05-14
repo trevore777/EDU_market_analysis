@@ -1,26 +1,21 @@
-# Simple Shares App - Stage 9 Full
+# Simple Shares App - Stage 8
 
-This is a complete replacement version, not just snippets.
+Stage 8 adds charts and graphing to the Turso/Vercel-ready sandbox app.
 
 ## Features
 
+- Vercel-ready Express app
 - Turso/libSQL database
-- Vercel-ready setup
-- Render-compatible Node app
 - Login/register
 - Sandbox paper trading
 - Virtual cash
 - Fake buy/sell trades
 - Persistent paper holdings
 - Trade history
-- Share search
-- Guided AI prompt dropdowns
-- Compare two shares/ETFs
-- Add searched share to watchlist
-- Fake buy searched share
-- Share price charts
-- Sandbox portfolio graph
-- `/health` database test route
+- Share price history charts
+- Sandbox portfolio value chart
+- Fake trade markers on charts
+- Health endpoint at `/health`
 
 ## Local setup
 
@@ -37,7 +32,7 @@ TURSO_AUTH_TOKEN=your-token
 COOKIE_SECRET=make_this_long_and_random
 ```
 
-Run:
+Then run:
 
 ```bash
 npm run dev
@@ -51,48 +46,40 @@ http://localhost:3000
 
 ## Demo login
 
-The app creates this demo user automatically:
+The migration creates this user automatically:
 
 ```text
 demo@shares.app
 demo123
 ```
 
-## Vercel
+## Vercel deployment
 
-Use the included `vercel.json`.
-
-Set environment variables:
+Add these environment variables in Vercel:
 
 ```env
 TURSO_DATABASE_URL
 TURSO_AUTH_TOKEN
 COOKIE_SECRET
-```
-
-If Vercel keeps showing a warning about `builds`, your deployed repository still has an old `vercel.json`.
-
-## Render
-
-Settings:
-
-```text
-Environment: Node
-Build Command: npm install
-Start Command: npm start
-```
-
-Environment variables:
-
-```env
-TURSO_DATABASE_URL
-TURSO_AUTH_TOKEN
-COOKIE_SECRET
-NODE_ENV=production
 ```
 
 ## Important
 
-This is an educational sandbox. It does not place real trades and does not provide personal financial advice.
+This is a sandbox simulation. It does not place real trades and does not provide personal financial advice.
 
-The search is currently based on the expanded local sample database. Later you can connect Finnhub, Twelve Data, Alpha Vantage, or Polygon for live external search.
+The chart data is currently generated sample-history data based on the app's sample prices. Later, this can be replaced with live historical data from Finnhub, Twelve Data, Alpha Vantage, Polygon, or another market-data provider.
+
+
+## Vercel install fix
+
+This version pins Node to 20.x in `package.json` and uses a simplified `vercel.json`.
+
+If Vercel still fails during dependency install:
+
+1. Delete Vercel build cache and redeploy.
+2. In Vercel Project Settings, set Node.js Version to 20.x.
+3. Make sure these Environment Variables are set:
+   - TURSO_DATABASE_URL
+   - TURSO_AUTH_TOKEN
+   - COOKIE_SECRET
+4. Do not commit `.env`.

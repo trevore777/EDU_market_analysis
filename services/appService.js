@@ -11,22 +11,8 @@ export function loadStocks() {
   return JSON.parse(fs.readFileSync(path.join(__dirname, "..", "data", "stocks.json"), "utf8"));
 }
 
-export function loadPrompts() {
-  return JSON.parse(fs.readFileSync(path.join(__dirname, "..", "data", "ai-prompts.json"), "utf8"));
-}
-
 export function findStock(symbol) {
   return loadStocks().find(s => s.symbol.toUpperCase() === String(symbol || "").toUpperCase());
-}
-
-export function searchStocks(query = "") {
-  const q = String(query || "").trim().toLowerCase();
-  const stocks = loadStocks();
-  if (!q) return stocks.sort((a,b)=>b.rating-a.rating);
-  return stocks.filter(s => {
-    const hay = `${s.symbol} ${s.name} ${s.type} ${s.sector}`.toLowerCase();
-    return hay.includes(q);
-  }).sort((a,b)=>b.rating-a.rating);
 }
 
 export async function ensurePaperAccount(userId) {
@@ -126,136 +112,6 @@ export async function resetSandbox(userId) {
   await run("UPDATE paper_accounts SET starting_cash = 10000, cash_balance = 10000, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?", [userId]);
 }
 
-function stockStrengths(stock) {
-  const strengths = [];
-  if (stock.quality >= 85) strengths.push("high quality score");
-  if (stock.value >= 70) strengths.push("reasonable value score");
-  if (stock.momentum >= 75) strengths.push("positive momentum");
-  if (stock.income >= 70) strengths.push("stronger dividend/income profile");
-  if (stock.type === "ETF") strengths.push("built-in diversification");
-  return strengths.length ? strengths : ["mixed profile; needs more research"];
-}
-
-function stockRisks(stock) {
-  const risks = [];
-  if (stock.risk.includes("High")) risks.push("higher volatility");
-  if (stock.value < 55) risks.push("valuation may be stretched");
-  if (stock.income < 20) risks.push("limited income/dividends");
-  if (stock.sector.toLowerCase().includes("technology")) risks.push("technology concentration and valuation risk");
-  if (stock.sector.toLowerCase().includes("bank")) risks.push("interest rate, property and credit-cycle risk");
-  return risks.length ? risks : ["normal market risk"];
-}
-
-export function buildGuidedAnswer({ promptId, symbol, compareSymbol, customQuestion, stats }) {
-  const stock = findStock(symbol);
-  const compare = compareSymbol ? findStock(compareSymbol) : null;
-  const prompts = loadPrompts();
-  const prompt = prompts.find(p => p.id === promptId);
-
-  if (!stock && !customQuestion) {
-    return {
-      title: "Choose a share first",
-      summary: "Select a share or ETF and a guided question.",
-      points: ["Use Search to find a share, then choose a prompt from the dropdown."]
-    };
-  }
-
-  if (promptId === "compare" && stock && compare) {
-    return {
-      title: `Compare ${stock.symbol} and ${compare.symbol}`,
-      summary: `${stock.symbol} is ${stock.type} exposure to ${stock.sector}. ${compare.symbol} is ${compare.type} exposure to ${compare.sector}.`,
-      points: [
-        `${stock.symbol} rating: ${stock.rating}/100. ${compare.symbol} rating: ${compare.rating}/100.`,
-        `${stock.symbol} risk: ${stock.risk}. ${compare.symbol} risk: ${compare.risk}.`,
-        `${stock.symbol} strengths: ${stockStrengths(stock).join(", ")}.`,
-        `${compare.symbol} strengths: ${stockStrengths(compare).join(", ")}.`,
-        "For a beginner, broad diversification and understanding the risk usually matter more than chasing the highest short-term return."
-      ]
-    };
-  }
-
-  if (stock) {
-    if (promptId === "risks") {
-      return {
-        title: `Risks of ${stock.symbol}`,
-        summary: stock.summary,
-        points: stockRisks(stock).map(r => `Risk: ${r}.`).concat([
-          "A beginner should ask: would I still be comfortable holding this if it dropped 20%?"
-        ])
-      };
-    }
-    if (promptId === "valuation") {
-      return {
-        title: `Value check: ${stock.symbol}`,
-        summary: `${stock.symbol} has a value score of ${stock.value}/100 and a quality score of ${stock.quality}/100 in this prototype model.`,
-        points: [
-          stock.value >= 70 ? "The model does not flag valuation as a major concern." : "The model suggests valuation caution.",
-          stock.quality >= 85 ? "Quality appears strong." : "Quality is more mixed.",
-          "A good company can still be a poor investment if bought at too high a price.",
-          "This is an educational model, not personal financial advice."
-        ]
-      };
-    }
-    if (promptId === "diversification") {
-      const sectorExposure = stats?.sectors?.[stock.sector] || 0;
-      return {
-        title: `Diversification check: ${stock.symbol}`,
-        summary: `${stock.symbol} belongs to ${stock.sector}.`,
-        points: [
-          sectorExposure > 0 ? `You already have virtual exposure to ${stock.sector}.` : `This would add new virtual exposure to ${stock.sector}.`,
-          stock.type === "ETF" ? "Because this is an ETF, it usually provides more diversification than one individual company." : "Because this is one company, it adds company-specific risk.",
-          "Avoid putting too much of the portfolio into one sector or one company."
-        ]
-      };
-    }
-    if (promptId === "income_growth") {
-      return {
-        title: `Growth vs income: ${stock.symbol}`,
-        summary: `${stock.symbol} has an income score of ${stock.income}/100 and momentum score of ${stock.momentum}/100.`,
-        points: [
-          stock.income >= 70 ? "This may appeal more to income/dividend-focused investors." : "This is not primarily an income idea in this model.",
-          stock.momentum >= 75 ? "Momentum is relatively positive." : "Momentum is not a major strength.",
-          "Growth investors usually focus on future earnings expansion. Income investors usually focus on dividends and stability."
-        ]
-      };
-    }
-    if (promptId === "buy_later") {
-      return {
-        title: `What would make ${stock.symbol} more attractive later?`,
-        summary: stock.summary,
-        points: [
-          "A better valuation or lower price zone.",
-          "Improved earnings, dividends, or business momentum.",
-          "Reduced concentration risk in your portfolio.",
-          "A clearer reason for owning it beyond recent price movement."
-        ]
-      };
-    }
-
-    return {
-      title: `Explain ${stock.symbol} simply`,
-      summary: stock.summary,
-      points: [
-        `${stock.name} is a ${stock.type} in ${stock.sector}.`,
-        `Prototype rating: ${stock.rating}/100.`,
-        `Main strengths: ${stockStrengths(stock).join(", ")}.`,
-        `Main risks: ${stockRisks(stock).join(", ")}.`,
-        "Use this as learning support before making any real financial decision."
-      ]
-    };
-  }
-
-  return {
-    title: "AI learning response",
-    summary: customQuestion || "Ask a question about shares, ETFs, risk or diversification.",
-    points: [
-      "Use the guided dropdowns to ask better investing questions.",
-      "Good questions focus on risk, valuation, diversification, income, growth and time horizon.",
-      "The app is educational and sandbox-only."
-    ]
-  };
-}
-
 export function coachResponse(question, stats) {
   const q = String(question || "").toLowerCase();
   if (q.includes("portfolio") || q.includes("sandbox")) {
@@ -274,5 +130,14 @@ export function coachResponse(question, stats) {
       ]
     };
   }
-  return buildGuidedAnswer({ customQuestion: question, stats });
+  return {
+    title: "Paper trading coach",
+    summary: "Use the sandbox to practise buying and selling with fake money.",
+    points: [
+      "Write a reason before each fake trade.",
+      "Review whether your reason was based on quality, valuation, diversification or emotion.",
+      "Avoid putting all virtual cash into one share just because it recently moved up.",
+      "This is a simulation only and does not place real trades."
+    ]
+  };
 }

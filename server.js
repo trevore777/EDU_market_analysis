@@ -1,3 +1,4 @@
+
 import express from "express";
 import expressLayouts from "express-ejs-layouts";
 import cookieParser from "cookie-parser";
@@ -6,26 +7,8 @@ import bcrypt from "bcryptjs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { migrate, one, run } from "./db/db.js";
-import {
-  loadStocks,
-  loadPrompts,
-  searchStocks,
-  sandboxStats,
-  buyPaperTrade,
-  sellPaperTrade,
-  resetSandbox,
-  ensurePaperAccount,
-  coachResponse,
-  buildGuidedAnswer
-} from "./services/appService.js";
+import { loadStocks, sandboxStats, buyPaperTrade, sellPaperTrade, resetSandbox, ensurePaperAccount, coachResponse } from "./services/appService.js";
 import { buildPriceHistory, buildPortfolioHistory, buildTradeMarkers } from "./services/chartService.js";
-
-console.log("BOOT: server.js started");
-console.log("PORT:", process.env.PORT);
-console.log("NODE_ENV:", process.env.NODE_ENV);
-console.log("TURSO_DATABASE_URL exists:", !!process.env.TURSO_DATABASE_URL);
-console.log("TURSO_AUTH_TOKEN exists:", !!process.env.TURSO_AUTH_TOKEN);
-
 
 dotenv.config();
 
@@ -35,9 +18,9 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const COOKIE_SECRET = process.env.COOKIE_SECRET || "dev_secret_change_me";
 
-let migrationPromise = Promise.resolve();
-console.log("TEMP: migration bypassed");
-
+let migrationPromise = migrate().catch((err) => {
+  console.error("Database migration failed:", err);
+});
 
 async function ready(req, res, next) {
   try {
@@ -58,10 +41,6 @@ app.use(express.json());
 app.use(cookieParser(COOKIE_SECRET));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(ready);
-
-app.get("/ping", (req, res) => {
-  res.status(200).send("pong");
-});
 
 async function currentUser(req) {
   const id = req.signedCookies.user_id;
@@ -84,7 +63,7 @@ app.use(async (req, res, next) => {
 
 app.get("/", async (req, res) => {
   const stocks = loadStocks().sort((a,b)=>b.rating-a.rating).slice(0, 4);
-  res.render("index", { title: "Simple Shares Stage 9", stocks });
+  res.render("index", { title: "Simple Shares Stage 7", stocks });
 });
 
 app.get("/health", async (req, res) => {
@@ -129,53 +108,7 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/stocks", (req, res) => {
-  const q = req.query.q || "";
-  res.render("stocks", {
-    title: "Ratings",
-    stocks: searchStocks(q),
-    q,
-    message: req.query.message || null
-  });
-});
-
-app.get("/search", requireLogin, async (req, res) => {
-  const q = req.query.q || "";
-  const symbol = req.query.symbol || "";
-  const results = searchStocks(q);
-  const stocks = loadStocks().sort((a,b)=>b.rating-a.rating);
-  const prompts = loadPrompts();
-  const stats = await sandboxStats(req.user.id);
-  res.render("search", {
-    title: "Search & Ask AI",
-    q,
-    symbol,
-    results,
-    stocks,
-    prompts,
-    answer: null,
-    selectedPrompt: "explain_simple",
-    compareSymbol: ""
-  });
-});
-
-app.post("/search/ask", requireLogin, async (req, res) => {
-  const { q, symbol, promptId, compareSymbol } = req.body;
-  const results = searchStocks(q || symbol || "");
-  const stocks = loadStocks().sort((a,b)=>b.rating-a.rating);
-  const prompts = loadPrompts();
-  const stats = await sandboxStats(req.user.id);
-  const answer = buildGuidedAnswer({ promptId, symbol, compareSymbol, stats });
-  res.render("search", {
-    title: "Search & Ask AI",
-    q: q || "",
-    symbol,
-    results,
-    stocks,
-    prompts,
-    answer,
-    selectedPrompt: promptId,
-    compareSymbol: compareSymbol || ""
-  });
+  res.render("stocks", { title: "Ratings", stocks: loadStocks().sort((a,b)=>b.rating-a.rating), message: req.query.message || null });
 });
 
 app.get("/stock/:symbol", (req, res) => {
@@ -218,23 +151,13 @@ app.post("/sandbox/reset", requireLogin, async (req, res) => {
   res.redirect("/sandbox?message=Sandbox reset to $10,000 virtual cash");
 });
 
-app.get("/coach", requireLogin, (req, res) => {
-  res.render("coach", { title: "AI Coach", answer: null, question: "" });
-});
-
+app.get("/coach", requireLogin, (req, res) => res.render("coach", { title: "AI Coach", answer: null, question: "" }));
 app.post("/coach", requireLogin, async (req, res) => {
   const stats = await sandboxStats(req.user.id);
   const answer = coachResponse(req.body.question || "", stats);
   res.render("coach", { title: "AI Coach", answer, question: req.body.question || "" });
 });
 
-app.get("/api/search", (req, res) => {
-  res.json({ results: searchStocks(req.query.q || "") });
-});
-
-app.get("/api/prompts", (req, res) => {
-  res.json({ prompts: loadPrompts() });
-});
 
 app.get("/api/chart/stock/:symbol", async (req, res) => {
   const points = buildPriceHistory(req.params.symbol, 90);
@@ -257,14 +180,12 @@ app.use((err, req, res, next) => {
   res.status(500).send(`
     <h1>Application error</h1>
     <p>${err.message}</p>
-    <p>Check that TURSO_DATABASE_URL and TURSO_AUTH_TOKEN are set in .env locally and in Vercel/Render.</p>
+    <p>Check that TURSO_DATABASE_URL and TURSO_AUTH_TOKEN are set in .env locally and in Vercel.</p>
   `);
 });
 
 if (process.env.VERCEL !== "1") {
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`BOOT OK: Server running on 0.0.0.0:${PORT}`);
-  });
+  app.listen(PORT, () => console.log(`Simple Shares Stage 7 running on http://localhost:${PORT}`));
 }
 
 export default app;

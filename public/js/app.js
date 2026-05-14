@@ -14,6 +14,7 @@ function runSimulator(){
      Projected growth: $${gain.toLocaleString(undefined,{maximumFractionDigits:0})}`;
 }
 
+
 function drawLineChart(canvas, points, options = {}) {
   if (!canvas || !points || points.length === 0) return;
   const ctx = canvas.getContext("2d");
@@ -63,7 +64,7 @@ function drawLineChart(canvas, points, options = {}) {
 
   const first = values[0];
   const last = values[values.length - 1];
-  const change = first ? ((last - first) / first) * 100 : 0;
+  const change = ((last - first) / first) * 100;
 
   ctx.fillStyle = "#132033";
   ctx.font = "bold 15px Arial";
