@@ -9,6 +9,7 @@
 <label>Reason for trade</label><input name="reason" placeholder="Why are you testing this trade?">
 <button>Fake Buy</button>
 </form>
+<a class="button secondary wide-link" href="/search?symbol=<%= stock.symbol %>&q=<%= stock.symbol %>">Ask guided AI questions</a>
 <% } else { %><p><a href="/login">Login</a> to use sandbox trading.</p><% } %>
 </div></section>
 <section class="card"><h2>Score breakdown</h2><div class="bars">
