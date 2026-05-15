@@ -1,13 +1,14 @@
 {
   "name": "simple-shares-app-stage8-vercel-fix",
   "version": "8.0.1",
-  "description": "Simple Shares App Stage 8 - charts and graphing",
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "dev": "node server.js",
     "start": "node server.js",
-    "build": "echo \"No build step required\""
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": "20.x"
   },
   "dependencies": {
     "@libsql/client": "^0.15.15",
@@ -16,14 +17,6 @@
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
-    "express-ejs-layouts": "^2.5.1",
-    "libsql": "^0.15.15"
-    
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.9"
-  },
-  "engines": {
-    "node": "20.x"
+    "express-ejs-layouts": "^2.5.1"
   }
 }
