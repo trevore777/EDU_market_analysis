@@ -1,0 +1,34 @@
+<section class="page-head">
+  <h1>Watchlist</h1>
+  <p>Saved shares and ETFs.</p>
+</section>
+
+<section class="card">
+
+  <% if (!rows.length) { %>
+    <p>No watchlist items yet.</p>
+  <% } %>
+
+  <% rows.forEach(r => { %>
+
+    <div class="result-card">
+
+      <div>
+        <strong><%= r.symbol %></strong>
+      </div>
+
+      <div class="row-actions">
+        <a class="small-button" href="/stock/<%= r.symbol %>">
+          Open
+        </a>
+
+        <a class="small-button alt" href="/search?symbol=<%= r.symbol %>&q=<%= r.symbol %>">
+          Ask AI
+        </a>
+      </div>
+
+    </div>
+
+  <% }) %>
+
+</section>

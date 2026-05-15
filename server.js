@@ -22,6 +22,12 @@ import {
 import { buildPriceHistory, buildPortfolioHistory, buildTradeMarkers } from "./services/chartService.js";
 import { getLiveQuote, searchLiveSymbols, getCompanyProfile } from "./services/finnhubService.js";
 
+import { all } from "./db/db.js";
+import {
+  getMarketNews,
+  getCandles
+} from "./services/finnhubExtras.js";
+
 dotenv.config();
 
 console.log("BOOT: server.js started");
@@ -71,6 +77,19 @@ app.get("/ping", (req, res) => res.status(200).send("pong"));
 
 app.get("/", (req,res)=>res.render("index",{title:"Simple Shares Stage 10", stocks: loadStocks().sort((a,b)=>b.rating-a.rating).slice(0,4)}));
 
+app.get("/watchlist", requireLogin, async (req, res) => {
+
+  const rows = await all(
+    "SELECT * FROM watchlist WHERE user_id = ? ORDER BY created_at DESC",
+    [req.user.id]
+  );
+
+  res.render("watchlist", {
+    title: "Watchlist",
+    rows
+  });
+});
+
 app.get("/health", async (req,res)=>{
   try {
     await one("SELECT 1 AS ok", []);
@@ -79,6 +98,59 @@ app.get("/health", async (req,res)=>{
     res.status(500).json({ok:false, error:err.message});
   }
 });
+
+app.get("/news", requireLogin, (req, res) => {
+
+  res.render("news", {
+    title: "Market News"
+  });
+
+});
+
+app.get("/api/live-news", async (req, res) => {
+
+  try {
+
+    const news = await getMarketNews();
+
+    res.json(news);
+
+  } catch (err) {
+
+    console.error(err);
+
+    res.status(500).json({
+      error: err.message
+    });
+
+  }
+
+});
+
+app.get("/api/candles/:symbol", async (req, res) => {
+
+  try {
+
+    const data = await getCandles(
+      req.params.symbol,
+      Number(req.query.days || 30)
+    );
+
+    res.json(data);
+
+  } catch (err) {
+
+    console.error(err);
+
+    res.status(500).json({
+      error: err.message
+    });
+
+  }
+
+});
+
+
 
 app.get("/login", (req,res)=>res.render("login",{title:"Login", error:null}));
 

@@ -1,1 +1,52 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title><%= title %></title><link rel="stylesheet" href="/css/styles.css"></head><body><header class="topbar"><a class="brand" href="/">Simple Shares <span>Stage 10</span></a><nav><a href="/stocks">Ratings</a><% if (user) { %><a href="/search">Live Search + AI</a><a href="/sandbox">Sandbox</a><a href="/coach">AI Coach</a><% } %><a href="/simulator">Simulator</a><% if (user) { %><form method="POST" action="/logout" class="inline"><button class="linkbtn">Logout</button></form><% } else { %><a href="/login">Login</a><a href="/register">Register</a><% } %></nav></header><div class="sandbox-banner">SANDBOX MODE: fake money, fake trades. Finnhub live search/quotes enabled when API key is set.</div><main class="container"><%- body %></main><footer class="footer">Educational prototype only. Not personal financial advice.</footer><script src="/js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="/">
+    Simple Shares <span>Stage 10.2</span>
+  </a>
+
+  <nav>
+    <a href="/">Home</a>
+    <a href="/stocks">Ratings</a>
+
+    <% if (user) { %>
+      <a href="/search">Live Search + AI</a>
+      <a href="/sandbox">Sandbox</a>
+      <a href="/watchlist">Watchlist</a>
+      <a href="/news">Market News</a>
+      <a href="/coach">AI Coach</a>
+
+      <form method="POST" action="/logout" class="inline">
+        <button class="linkbtn">Logout</button>
+      </form>
+    <% } else { %>
+      <a href="/login">Login</a>
+      <a href="/register">Register</a>
+    <% } %>
+  </nav>
+</header>
+
+<div class="sandbox-banner">
+  SANDBOX MODE — Educational use only. Not financial advice.
+</div>
+
+<main class="container">
+  <%- body %>
+</main>
+
+<footer class="footer">
+  Stage 10.2 • Finnhub Live Data • Turso Cache
+</footer>
+
+<script src="/js/app.js"></script>
+
+</body>
+</html>
