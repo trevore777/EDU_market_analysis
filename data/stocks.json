@@ -5,17 +5,10 @@
     "type": "ETF",
     "sector": "Diversified Australia",
     "price": 101.42,
-    "changePct": 0.32,
     "rating": 89,
     "risk": "Low-Medium",
     "signal": "Strong Watch",
-    "zone": "Fair Value",
-    "dividendYield": 3.7,
-    "quality": 91,
-    "value": 76,
-    "momentum": 68,
-    "income": 82,
-    "summary": "Broad exposure to Australian listed companies. Useful as a core long-term holding for beginners seeking diversification."
+    "summary": "Broad exposure to Australian listed companies."
   },
   {
     "symbol": "IVV.AX",
@@ -23,17 +16,10 @@
     "type": "ETF",
     "sector": "US Large Cap",
     "price": 58.71,
-    "changePct": 0.48,
     "rating": 92,
     "risk": "Medium",
     "signal": "Strong Watch",
-    "zone": "Fair Value",
-    "dividendYield": 1.4,
-    "quality": 94,
-    "value": 70,
-    "momentum": 77,
-    "income": 45,
-    "summary": "Tracks major US companies. Strong for long-term global growth exposure, but currency and US market risks apply."
+    "summary": "Tracks major US companies."
   },
   {
     "symbol": "NDQ.AX",
@@ -41,17 +27,10 @@
     "type": "ETF",
     "sector": "Technology Growth",
     "price": 47.36,
-    "changePct": 0.91,
     "rating": 84,
     "risk": "Medium-High",
     "signal": "Watch",
-    "zone": "Fair Value",
-    "dividendYield": 0.5,
-    "quality": 88,
-    "value": 55,
-    "momentum": 84,
-    "income": 20,
-    "summary": "Technology-focused ETF with higher growth potential and higher volatility."
+    "summary": "Technology-focused ETF."
   },
   {
     "symbol": "CBA.AX",
@@ -59,17 +38,10 @@
     "type": "Share",
     "sector": "Banking",
     "price": 121.5,
-    "changePct": -0.21,
     "rating": 68,
     "risk": "Medium",
     "signal": "Hold / Watch",
-    "zone": "Overheated",
-    "dividendYield": 3.9,
-    "quality": 87,
-    "value": 48,
-    "momentum": 62,
-    "income": 78,
-    "summary": "High-quality Australian bank with strong profitability, but valuation can become stretched."
+    "summary": "Large Australian bank."
   },
   {
     "symbol": "BHP.AX",
@@ -77,17 +49,10 @@
     "type": "Share",
     "sector": "Materials",
     "price": 44.08,
-    "changePct": 0.11,
     "rating": 76,
     "risk": "Medium-High",
     "signal": "Watch",
-    "zone": "Fair Value",
-    "dividendYield": 5.1,
-    "quality": 82,
-    "value": 72,
-    "momentum": 58,
-    "income": 85,
-    "summary": "Global resources company exposed to iron ore, copper, and industrial demand."
+    "summary": "Global resources company."
   },
   {
     "symbol": "WES.AX",
@@ -95,17 +60,10 @@
     "type": "Share",
     "sector": "Consumer/Retail",
     "price": 64.2,
-    "changePct": 0.15,
     "rating": 74,
     "risk": "Medium",
     "signal": "Hold / Watch",
-    "zone": "Fair Value",
-    "dividendYield": 2.8,
-    "quality": 88,
-    "value": 52,
-    "momentum": 70,
-    "income": 55,
-    "summary": "Diversified Australian retailer and industrial group. Generally high quality, but valuation discipline is important."
+    "summary": "Diversified Australian retailer."
   },
   {
     "symbol": "AAPL",
@@ -113,17 +71,10 @@
     "type": "Share",
     "sector": "Technology",
     "price": 189.98,
-    "changePct": 0.44,
     "rating": 82,
     "risk": "Medium",
     "signal": "Watch",
-    "zone": "Fair Value",
-    "dividendYield": 0.5,
-    "quality": 94,
-    "value": 58,
-    "momentum": 76,
-    "income": 20,
-    "summary": "Global consumer technology company known for iPhone, Mac, services and strong brand loyalty. High quality, but valuation matters."
+    "summary": "Global consumer technology company."
   },
   {
     "symbol": "MSFT",
@@ -131,17 +82,10 @@
     "type": "Share",
     "sector": "Technology",
     "price": 421.12,
-    "changePct": 0.52,
     "rating": 87,
     "risk": "Medium",
     "signal": "Strong Watch",
-    "zone": "Fair Value",
-    "dividendYield": 0.8,
-    "quality": 96,
-    "value": 60,
-    "momentum": 82,
-    "income": 25,
-    "summary": "Large software, cloud and AI infrastructure company. Often viewed as a high-quality compounder, but still exposed to valuation risk."
+    "summary": "Software, cloud and AI infrastructure company."
   },
   {
     "symbol": "TSLA",
@@ -149,17 +93,10 @@
     "type": "Share",
     "sector": "Automotive / Technology",
     "price": 178.35,
-    "changePct": 1.28,
     "rating": 61,
     "risk": "High",
     "signal": "Speculative Watch",
-    "zone": "Volatile",
-    "dividendYield": 0,
-    "quality": 70,
-    "value": 42,
-    "momentum": 64,
-    "income": 0,
-    "summary": "Electric vehicle and energy company with high growth expectations and high volatility. Better suited to risk-tolerant investors."
+    "summary": "Electric vehicle and energy company."
   },
   {
     "symbol": "BRK.B",
@@ -167,52 +104,20 @@
     "type": "Share",
     "sector": "Diversified Holding Company",
     "price": 409.75,
-    "changePct": 0.2,
     "rating": 85,
     "risk": "Medium",
     "signal": "Strong Watch",
-    "zone": "Fair Value",
-    "dividendYield": 0,
-    "quality": 91,
-    "value": 72,
-    "momentum": 66,
-    "income": 0,
-    "summary": "Diversified holding company led historically by Warren Buffett. Owns operating businesses and listed investments. Often seen as a quality long-term compounder."
+    "summary": "Diversified holding company."
   },
   {
-    "symbol": "VTI",
-    "name": "Vanguard Total Stock Market ETF",
-    "type": "ETF",
-    "sector": "US Broad Market",
-    "price": 258.66,
-    "changePct": 0.38,
-    "rating": 90,
-    "risk": "Medium",
-    "signal": "Strong Watch",
-    "zone": "Fair Value",
-    "dividendYield": 1.4,
-    "quality": 92,
-    "value": 70,
-    "momentum": 75,
-    "income": 45,
-    "summary": "Broad US total market ETF. Useful for diversified US equity exposure."
-  },
-  {
-    "symbol": "VOO",
-    "name": "Vanguard S&P 500 ETF",
-    "type": "ETF",
-    "sector": "US Large Cap",
-    "price": 475.33,
-    "changePct": 0.41,
-    "rating": 91,
-    "risk": "Medium",
-    "signal": "Strong Watch",
-    "zone": "Fair Value",
-    "dividendYield": 1.3,
-    "quality": 93,
-    "value": 69,
-    "momentum": 77,
-    "income": 42,
-    "summary": "Tracks the S&P 500. Simple exposure to large US companies."
+    "symbol": "NVDA",
+    "name": "NVIDIA Corporation",
+    "type": "Share",
+    "sector": "Semiconductors / AI",
+    "price": 924.79,
+    "rating": 83,
+    "risk": "High",
+    "signal": "Watch",
+    "summary": "Semiconductor and AI infrastructure company."
   }
 ]

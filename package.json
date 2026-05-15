@@ -1,7 +1,6 @@
 {
-  "name": "simple-shares-app-stage9-full",
-  "version": "9.0.0",
-  "description": "Simple Shares App Stage 9 - search, guided AI prompts, sandbox trading, charts, Turso/Vercel ready",
+  "name": "simple-shares-app-stage10-finnhub",
+  "version": "10.0.0",
   "type": "module",
   "main": "server.js",
   "scripts": {

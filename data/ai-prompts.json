@@ -2,43 +2,36 @@
   {
     "id": "explain_simple",
     "category": "Beginner",
-    "label": "Explain this share in simple terms",
-    "template": "Explain {symbol} in simple terms. What does it do, how does it make money, and why might beginners watch it?"
+    "label": "Explain this share in simple terms"
   },
   {
     "id": "risks",
     "category": "Risk",
-    "label": "What are the biggest risks?",
-    "template": "What are the biggest risks of {symbol}? Explain them for a beginner."
+    "label": "What are the biggest risks?"
   },
   {
     "id": "valuation",
     "category": "Value",
-    "label": "Does it look expensive or undervalued?",
-    "template": "Does {symbol} look expensive or undervalued based on quality, valuation and risk? Explain in simple terms."
+    "label": "Does it look expensive or undervalued?"
   },
   {
     "id": "diversification",
     "category": "Portfolio",
-    "label": "Would this improve diversification?",
-    "template": "Would adding {symbol} improve my portfolio diversification? Explain concentration risk."
+    "label": "Would this improve diversification?"
   },
   {
     "id": "income_growth",
     "category": "Goal",
-    "label": "Is this better for dividends or growth?",
-    "template": "Is {symbol} better for growth, income/dividends, or long-term balanced investing?"
-  },
-  {
-    "id": "buy_later",
-    "category": "Watchlist",
-    "label": "What would make this more attractive later?",
-    "template": "What would make {symbol} more attractive to watch or buy later? Do not give personal advice."
+    "label": "Is this better for dividends or growth?"
   },
   {
     "id": "compare",
     "category": "Comparison",
-    "label": "Compare two shares/ETFs",
-    "template": "Compare {symbol} with {compareSymbol}. Explain quality, risk, diversification and beginner suitability."
+    "label": "Compare two shares/ETFs"
+  },
+  {
+    "id": "live_movement",
+    "category": "Live Data",
+    "label": "What does the live quote suggest?"
   }
 ]
