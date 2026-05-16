@@ -1,6 +1,15 @@
 <section class="page-head">
   <h1><%= stock.symbol %> — <%= stock.name %></h1>
   <p><%= stock.summary %></p>
+  <% const exchangeInfo = profile && profile.exchangeInfo ? profile.exchangeInfo : null; %>
+  <% if (exchangeInfo && exchangeInfo.quoteUrl) { %>
+    <p class="hint">
+      Exchange link: 
+      <a href="<%= exchangeInfo.quoteUrl %>" target="_blank" rel="noopener noreferrer">
+        Open <%= exchangeInfo.label %> quote and graph information
+      </a>
+    </p>
+  <% } %>
 </section>
 
 <section class="grid two">
@@ -15,6 +24,9 @@
       <p><strong>Previous close:</strong> <span id="liveQuotePrevClose">$<%= Number(q.pc || 0).toFixed(2) %></span></p>
       <p><strong>Change:</strong> <span id="liveQuoteChange">$<%= Number(q.ch || 0).toFixed(2) %> (<%= Number(q.chp || 0).toFixed(2) %>%)</span></p>
       <p><strong>Last update:</strong> <span id="liveQuoteTime"><%= q.t ? new Date(Number(q.t) * 1000).toLocaleString() : "Waiting for Kunpeng tick" %></span></p>
+      <% if (exchangeInfo && exchangeInfo.quoteUrl) { %>
+        <p><strong>Exchange page:</strong> <a href="<%= exchangeInfo.quoteUrl %>" target="_blank" rel="noopener noreferrer"><%= exchangeInfo.label %></a></p>
+      <% } %>
     <% } else { %>
       <p>No quote available yet. Add your Kunpeng token and check market/exchange access.</p>
     <% } %>
@@ -46,7 +58,14 @@
     <p><strong>Country:</strong> <%= profile.profile.country %></p>
     <p><strong>Currency:</strong> <%= profile.profile.currency %></p>
     <p><strong>Exchange:</strong> <%= profile.profile.exchange %></p>
+    <p><strong>Market:</strong> <%= profile.profile.market %></p>
     <p><strong>Kunpeng symbol:</strong> <%= profile.kunpengSymbol %></p>
+    <% if (exchangeInfo && exchangeInfo.quoteUrl) { %>
+      <p><strong>Share/exchange link:</strong> <a href="<%= exchangeInfo.quoteUrl %>" target="_blank" rel="noopener noreferrer"><%= exchangeInfo.label %></a></p>
+    <% } %>
+    <% if (exchangeInfo && exchangeInfo.exchangeHomeUrl && exchangeInfo.exchangeHomeUrl !== "#") { %>
+      <p><strong>Exchange website:</strong> <a href="<%= exchangeInfo.exchangeHomeUrl %>" target="_blank" rel="noopener noreferrer"><%= exchangeInfo.exchangeName %></a></p>
+    <% } %>
     <p><strong>Source:</strong> <%= profile.source %></p>
   <% } else { %>
     <p>Profile unavailable.</p>
@@ -56,5 +75,13 @@
 <section class="card">
   <h2>Price History Graph</h2>
   <p class="hint">The graph is seeded with local history, then updates from Kunpeng WebSocket ticks when your token, market and symbol are authorised.</p>
-  <div class="chart-wrap"><canvas id="stockChart" width="900" height="320" data-symbol="<%= stock.symbol %>"></canvas></div>
+  <% if (exchangeInfo && exchangeInfo.graphUrl) { %>
+    <p class="hint">
+      External graph/check: 
+      <a id="exchangeGraphLink" href="<%= exchangeInfo.graphUrl %>" target="_blank" rel="noopener noreferrer">
+        View <%= exchangeInfo.label %> on the exchange/market page
+      </a>
+    </p>
+  <% } %>
+  <div class="chart-wrap"><canvas id="stockChart" width="900" height="320" data-symbol="<%= stock.symbol %>" data-exchange-url="<%= exchangeInfo ? exchangeInfo.graphUrl : '' %>"></canvas></div>
 </section>
