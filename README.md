@@ -1,85 +1,66 @@
-# Simple Shares App - Stage 8
+# Simple Shares App - Stage 10 Finnhub
 
-Stage 8 adds charts and graphing to the Turso/Vercel-ready sandbox app.
+Complete replacement files for Stage 10.
 
-## Features
+## New Stage 10 Features
 
-- Vercel-ready Express app
-- Turso/libSQL database
-- Login/register
-- Sandbox paper trading
-- Virtual cash
-- Fake buy/sell trades
-- Persistent paper holdings
-- Trade history
-- Share price history charts
-- Sandbox portfolio value chart
-- Fake trade markers on charts
-- Health endpoint at `/health`
+- Finnhub live symbol search
+- Finnhub live quote endpoint
+- Finnhub company profile endpoint
+- Turso stock quote cache
+- Sandbox fake trades use live quote when available
+- Fallback sample data if Finnhub fails/rate-limits
+- Existing sandbox, charts and guided prompts retained
 
-## Local setup
+## Run locally
 
 ```bash
 npm install
 cp .env.example .env
-```
-
-Fill in `.env`:
-
-```env
-TURSO_DATABASE_URL=libsql://your-database.turso.io
-TURSO_AUTH_TOKEN=your-token
-COOKIE_SECRET=make_this_long_and_random
-```
-
-Then run:
-
-```bash
 npm run dev
 ```
 
-Open:
+Set `.env`:
 
-```text
-http://localhost:3000
+```env
+PORT=3000
+COOKIE_SECRET=make_this_long_and_random
+TURSO_DATABASE_URL=libsql://your-database.turso.io
+TURSO_AUTH_TOKEN=your-token
+FINNHUB_API_KEY=your-finnhub-key
+NODE_ENV=development
 ```
 
-## Demo login
-
-The migration creates this user automatically:
+## Test
 
 ```text
-demo@shares.app
-demo123
+http://localhost:3000/health
+http://localhost:3000/api/live-quote/AAPL
+http://localhost:3000/api/live-search?q=apple
 ```
 
-## Vercel deployment
+## Render
 
-Add these environment variables in Vercel:
+Build Command:
+
+```bash
+npm install --include=prod --no-audit --no-fund && ls node_modules/express
+```
+
+Start Command:
+
+```bash
+npm start
+```
+
+Environment variables:
 
 ```env
 TURSO_DATABASE_URL
 TURSO_AUTH_TOKEN
 COOKIE_SECRET
+FINNHUB_API_KEY
+NODE_ENV=production
 ```
 
-## Important
-
-This is a sandbox simulation. It does not place real trades and does not provide personal financial advice.
-
-The chart data is currently generated sample-history data based on the app's sample prices. Later, this can be replaced with live historical data from Finnhub, Twelve Data, Alpha Vantage, Polygon, or another market-data provider.
-
-
-## Vercel install fix
-
-This version pins Node to 20.x in `package.json` and uses a simplified `vercel.json`.
-
-If Vercel still fails during dependency install:
-
-1. Delete Vercel build cache and redeploy.
-2. In Vercel Project Settings, set Node.js Version to 20.x.
-3. Make sure these Environment Variables are set:
-   - TURSO_DATABASE_URL
-   - TURSO_AUTH_TOKEN
-   - COOKIE_SECRET
-4. Do not commit `.env`.
+Educational sandbox only. No real trades. Not financial advice.

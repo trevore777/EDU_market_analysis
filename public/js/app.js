@@ -1,115 +1,112 @@
+function runSimulator(){const s=Number(document.getElementById('startAmount').value||0),m=Number(document.getElementById('monthly').value||0),y=Number(document.getElementById('years').value||0),r=Number(document.getElementById('returnRate').value||0)/100/12;let v=s,c=s;for(let i=0;i<y*12;i++){v=v*(1+r)+m;c+=m}document.getElementById('simResult').innerHTML=`Projected value: $${v.toLocaleString(undefined,{maximumFractionDigits:0})}<br>Total contributed: $${c.toLocaleString(undefined,{maximumFractionDigits:0})}`;}
 
-function runSimulator(){
-  const start = Number(document.getElementById("startAmount").value || 0);
-  const monthly = Number(document.getElementById("monthly").value || 0);
-  const years = Number(document.getElementById("years").value || 0);
-  const rate = Number(document.getElementById("returnRate").value || 0) / 100 / 12;
-  const months = years * 12;
-  let value = start, contributed = start;
-  for(let i=0;i<months;i++){ value = value * (1 + rate) + monthly; contributed += monthly; }
-  const gain = value - contributed;
-  document.getElementById("simResult").innerHTML =
-    `Projected value: $${value.toLocaleString(undefined,{maximumFractionDigits:0})}<br>
-     Total contributed: $${contributed.toLocaleString(undefined,{maximumFractionDigits:0})}<br>
-     Projected growth: $${gain.toLocaleString(undefined,{maximumFractionDigits:0})}`;
+function chartValue(point){return Number(point.close ?? point.price ?? point.value ?? 0);}
+
+function drawLineChart(canvas,points,o={}){if(!canvas||!points||!points.length)return;const ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height,p={left:58,right:24,top:24,bottom:44};ctx.clearRect(0,0,w,h);const vals=points.map(chartValue).filter(Number.isFinite),min=Math.min(...vals),max=Math.max(...vals),range=max-min||1;const X=i=>p.left+(i/Math.max(1,points.length-1))*(w-p.left-p.right),Y=v=>p.top+((max-v)/range)*(h-p.top-p.bottom);ctx.strokeStyle='#dfe6ef';ctx.lineWidth=1;ctx.font='12px Arial';for(let i=0;i<=4;i++){const gy=p.top+i*((h-p.top-p.bottom)/4);ctx.beginPath();ctx.moveTo(p.left,gy);ctx.lineTo(w-p.right,gy);ctx.stroke();ctx.fillStyle='#637083';ctx.fillText('$'+(max-(i/4)*range).toFixed(2),8,gy+4)}ctx.strokeStyle='#155eef';ctx.lineWidth=3;ctx.beginPath();points.forEach((pt,i)=>{const v=chartValue(pt);if(i===0)ctx.moveTo(X(i),Y(v));else ctx.lineTo(X(i),Y(v))});ctx.stroke();ctx.fillStyle='#132033';ctx.font='bold 15px Arial';ctx.fillText(o.title||'Chart',p.left,18)}
+
+function setText(id,value){const el=document.getElementById(id);if(el)el.textContent=value;}
+function money(v){const n=Number(v||0);return '$'+n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});}
+function pct(v){const n=Number(v||0);return n.toFixed(2)+'%';}
+
+function updateQuoteDisplay(tick){
+  if(!tick || typeof tick !== 'object') return;
+  const price = Number(tick.price ?? tick.c ?? 0);
+  if(!Number.isFinite(price) || price <= 0) return;
+  setText('liveQuotePrice', money(price));
+  setText('liveQuoteSource', 'kunpeng-websocket');
+  setText('liveQuoteOpen', money(tick.open));
+  setText('liveQuoteHigh', money(tick.high));
+  setText('liveQuoteLow', money(tick.low));
+  setText('liveQuotePrevClose', money(tick.prev_close));
+  setText('liveQuoteChange', `${money(tick.ch)} (${pct(tick.chp)})`);
+  if(tick.time){
+    const d = new Date(Number(tick.time) * 1000);
+    setText('liveQuoteTime', d.toLocaleString());
+  }
 }
 
-
-function drawLineChart(canvas, points, options = {}) {
-  if (!canvas || !points || points.length === 0) return;
-  const ctx = canvas.getContext("2d");
-  const width = canvas.width;
-  const height = canvas.height;
-  const pad = { left: 58, right: 24, top: 24, bottom: 44 };
-  ctx.clearRect(0, 0, width, height);
-
-  const values = points.map(p => Number(p.price ?? p.value));
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const range = max - min || 1;
-
-  function x(i) {
-    return pad.left + (i / Math.max(1, points.length - 1)) * (width - pad.left - pad.right);
+function appendLivePoint(points, tick){
+  const price = Number(tick.price ?? tick.c ?? 0);
+  if(!Number.isFinite(price) || price <= 0) return points;
+  const date = tick.time ? new Date(Number(tick.time)*1000).toISOString().slice(0,10) : new Date().toISOString().slice(0,10);
+  const last = points[points.length - 1];
+  if(last && last.date === date){
+    last.close = price;
+    last.price = price;
+  } else {
+    points.push({date, close: price, price});
+    if(points.length > 120) points.shift();
   }
+  return points;
+}
 
-  function y(v) {
-    return pad.top + ((max - v) / range) * (height - pad.top - pad.bottom);
-  }
+async function connectKunpeng(canvas, points){
+  if(!canvas || !canvas.dataset.symbol) return;
+  const status = document.getElementById('kunpengStatus');
+  try{
+    const res = await fetch('/api/kunpeng/config/'+encodeURIComponent(canvas.dataset.symbol));
+    const cfg = await res.json();
+    if(!cfg.enabled){
+      if(status) status.textContent = cfg.message || 'Kunpeng token missing.';
+      return;
+    }
 
-  ctx.font = "12px Arial";
-  ctx.strokeStyle = "#dfe6ef";
-  ctx.lineWidth = 1;
+    const url = `${cfg.wsUrl}?token=${encodeURIComponent(cfg.token)}`;
+    const ws = new WebSocket(url);
 
-  for (let i = 0; i <= 4; i++) {
-    const gy = pad.top + i * ((height - pad.top - pad.bottom) / 4);
-    ctx.beginPath();
-    ctx.moveTo(pad.left, gy);
-    ctx.lineTo(width - pad.right, gy);
-    ctx.stroke();
-
-    const labelValue = max - (i / 4) * range;
-    ctx.fillStyle = "#637083";
-    ctx.fillText("$" + labelValue.toFixed(2), 8, gy + 4);
-  }
-
-  ctx.strokeStyle = "#155eef";
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  points.forEach((p, i) => {
-    const value = Number(p.price ?? p.value);
-    if (i === 0) ctx.moveTo(x(i), y(value));
-    else ctx.lineTo(x(i), y(value));
-  });
-  ctx.stroke();
-
-  const first = values[0];
-  const last = values[values.length - 1];
-  const change = ((last - first) / first) * 100;
-
-  ctx.fillStyle = "#132033";
-  ctx.font = "bold 15px Arial";
-  ctx.fillText(options.title || "Price history", pad.left, 18);
-
-  ctx.fillStyle = change >= 0 ? "#11845b" : "#c53030";
-  ctx.fillText(`${change >= 0 ? "+" : ""}${change.toFixed(2)}%`, width - 90, 18);
-
-  ctx.fillStyle = "#637083";
-  ctx.font = "12px Arial";
-  ctx.fillText(points[0].date, pad.left, height - 16);
-  ctx.fillText(points[points.length - 1].date, width - pad.right - 80, height - 16);
-
-  if (options.markers && options.markers.length) {
-    options.markers.forEach(marker => {
-      const idx = points.findIndex(p => p.date >= marker.date);
-      if (idx >= 0) {
-        const value = Number(points[idx].price ?? points[idx].value);
-        ctx.beginPath();
-        ctx.arc(x(idx), y(value), 5, 0, Math.PI * 2);
-        ctx.fillStyle = marker.action === "BUY" ? "#11845b" : "#b7791f";
-        ctx.fill();
-      }
+    ws.addEventListener('open', () => {
+      if(status) status.textContent = `Kunpeng connected. Subscribing to ${cfg.symbol}...`;
+      ws.send(JSON.stringify({
+        action: 'subscribe',
+        market: cfg.market,
+        exchange: cfg.exchange,
+        symbol: cfg.symbol,
+        replay: 'last'
+      }));
     });
+
+    ws.addEventListener('message', (event) => {
+      let msg;
+      try { msg = JSON.parse(event.data); } catch { return; }
+      if(msg.type === 'system'){
+        if(status) status.textContent = `Kunpeng: ${msg.status || ''} ${msg.message || ''}`.trim();
+        return;
+      }
+      if(msg.symbol && msg.symbol !== cfg.symbol) return;
+      updateQuoteDisplay(msg);
+      appendLivePoint(points, msg);
+      drawLineChart(canvas, points, {title: `${canvas.dataset.symbol} live Kunpeng graph`});
+      if(status) status.textContent = `Kunpeng live: ${msg.symbol} ${money(msg.price)} updated`;
+    });
+
+    ws.addEventListener('error', () => {
+      if(status) status.textContent = 'Kunpeng WebSocket error. Check token, market, exchange and symbol access.';
+    });
+
+    ws.addEventListener('close', () => {
+      if(status) status.textContent = 'Kunpeng WebSocket closed. Refresh the page to reconnect.';
+    });
+  }catch(err){
+    if(status) status.textContent = 'Kunpeng setup failed: '+err.message;
   }
 }
 
-async function loadStockChart() {
-  const canvas = document.getElementById("stockChart");
-  if (!canvas) return;
-  const symbol = canvas.dataset.symbol;
-  const res = await fetch(`/api/chart/stock/${encodeURIComponent(symbol)}`);
-  const data = await res.json();
-  drawLineChart(canvas, data.points, { title: `${symbol} sample price history` });
+async function loadStockChart(){
+  const c=document.getElementById('stockChart');
+  if(!c)return;
+  try{
+    const r=await fetch('/api/candles/'+encodeURIComponent(c.dataset.symbol)+'?days=90');
+    const d=await r.json();
+    const points=(d.points||[]).map(p=>({date:p.date, close:Number(p.close ?? p.price), price:Number(p.close ?? p.price)}));
+    drawLineChart(c,points,{title:c.dataset.symbol+' price history'});
+    const status=document.getElementById('kunpengStatus');
+    if(status && d.message) status.textContent=d.message;
+    connectKunpeng(c, points);
+  }catch(err){
+    const status=document.getElementById('kunpengStatus');
+    if(status) status.textContent='Chart failed: '+err.message;
+  }
 }
 
-async function loadSandboxChart() {
-  const canvas = document.getElementById("sandboxChart");
-  if (!canvas) return;
-  const res = await fetch("/api/chart/sandbox");
-  const data = await res.json();
-  drawLineChart(canvas, data.points, { title: "Sandbox portfolio value", markers: data.markers });
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  loadStockChart();
-  loadSandboxChart();
-});
+async function loadSandboxChart(){const c=document.getElementById('sandboxChart');if(!c)return;const r=await fetch('/api/chart/sandbox');const d=await r.json();drawLineChart(c,d.points,{title:'Sandbox portfolio value'})}
+document.addEventListener('DOMContentLoaded',()=>{loadStockChart();loadSandboxChart();});

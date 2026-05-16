@@ -1,3 +1,4 @@
+
 import "dotenv/config";
 import { createClient } from "@libsql/client";
 import bcrypt from "bcryptjs";
@@ -13,10 +14,7 @@ if (!url || !authToken) {
   throw new Error("Missing TURSO_DATABASE_URL or TURSO_AUTH_TOKEN");
 }
 
-export const db = createClient({
-  url,
-  authToken
-});
+export const db = createClient({ url, authToken });
 
 export async function one(sql, args = []) {
   const result = await db.execute({ sql, args });
@@ -43,7 +41,6 @@ export async function migrate() {
       password_hash TEXT NOT NULL,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )`,
-
     `CREATE TABLE IF NOT EXISTS paper_accounts (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL UNIQUE,
@@ -52,7 +49,6 @@ export async function migrate() {
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP
     )`,
-
     `CREATE TABLE IF NOT EXISTS paper_trades (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL,
@@ -64,7 +60,6 @@ export async function migrate() {
       reason TEXT DEFAULT '',
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )`,
-
     `CREATE TABLE IF NOT EXISTS paper_holdings (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL,
@@ -74,13 +69,51 @@ export async function migrate() {
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
       UNIQUE(user_id, symbol)
     )`,
-
     `CREATE TABLE IF NOT EXISTS watchlist (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL,
       symbol TEXT NOT NULL,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       UNIQUE(user_id, symbol)
+    )`,
+    `CREATE TABLE IF NOT EXISTS stock_cache (
+      symbol TEXT PRIMARY KEY,
+      quote_json TEXT,
+      profile_json TEXT,
+      search_json TEXT,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )`,
+    `CREATE TABLE IF NOT EXISTS auto_strategy_settings (
+      user_id INTEGER PRIMARY KEY,
+      enabled INTEGER NOT NULL DEFAULT 0,
+      symbols TEXT NOT NULL DEFAULT '',
+      short_window INTEGER NOT NULL DEFAULT 5,
+      long_window INTEGER NOT NULL DEFAULT 20,
+      max_position_pct REAL NOT NULL DEFAULT 10,
+      stop_loss_pct REAL NOT NULL DEFAULT 5,
+      take_profit_pct REAL NOT NULL DEFAULT 10,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )`,
+    `CREATE TABLE IF NOT EXISTS auto_strategy_runs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      status TEXT NOT NULL,
+      summary TEXT DEFAULT '',
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )`,
+    `CREATE TABLE IF NOT EXISTS auto_strategy_signals (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      run_id INTEGER,
+      symbol TEXT NOT NULL,
+      action TEXT NOT NULL,
+      price REAL NOT NULL DEFAULT 0,
+      short_ma REAL NOT NULL DEFAULT 0,
+      long_ma REAL NOT NULL DEFAULT 0,
+      reason TEXT DEFAULT '',
+      executed INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )`
   ];
 
@@ -89,13 +122,9 @@ export async function migrate() {
     await run(sql);
   }
 
-  const demo = await one("SELECT id FROM users WHERE email = ?", [
-    "demo@shares.app"
-  ]);
-
+  const demo = await one("SELECT id FROM users WHERE email = ?", ["demo@shares.app"]);
   if (!demo) {
     const hash = bcrypt.hashSync("demo123", 10);
-
     const result = await run(
       "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
       ["Demo User", "demo@shares.app", hash]

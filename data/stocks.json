@@ -5,17 +5,10 @@
     "type": "ETF",
     "sector": "Diversified Australia",
     "price": 101.42,
-    "changePct": 0.32,
     "rating": 89,
     "risk": "Low-Medium",
     "signal": "Strong Watch",
-    "zone": "Fair Value",
-    "dividendYield": 3.7,
-    "quality": 91,
-    "value": 76,
-    "momentum": 68,
-    "income": 82,
-    "summary": "Broad exposure to Australian listed companies. Useful as a core long-term holding for beginners seeking diversification."
+    "summary": "Broad exposure to Australian listed companies."
   },
   {
     "symbol": "IVV.AX",
@@ -23,17 +16,10 @@
     "type": "ETF",
     "sector": "US Large Cap",
     "price": 58.71,
-    "changePct": 0.48,
     "rating": 92,
     "risk": "Medium",
     "signal": "Strong Watch",
-    "zone": "Fair Value",
-    "dividendYield": 1.4,
-    "quality": 94,
-    "value": 70,
-    "momentum": 77,
-    "income": 45,
-    "summary": "Tracks major US companies. Strong for long-term global growth exposure, but currency and US market risks apply."
+    "summary": "Tracks major US companies."
   },
   {
     "symbol": "NDQ.AX",
@@ -41,17 +27,10 @@
     "type": "ETF",
     "sector": "Technology Growth",
     "price": 47.36,
-    "changePct": 0.91,
     "rating": 84,
     "risk": "Medium-High",
     "signal": "Watch",
-    "zone": "Fair Value",
-    "dividendYield": 0.5,
-    "quality": 88,
-    "value": 55,
-    "momentum": 84,
-    "income": 20,
-    "summary": "Technology-focused ETF with higher growth potential and higher volatility."
+    "summary": "Technology-focused ETF."
   },
   {
     "symbol": "CBA.AX",
@@ -59,17 +38,10 @@
     "type": "Share",
     "sector": "Banking",
     "price": 121.5,
-    "changePct": -0.21,
     "rating": 68,
     "risk": "Medium",
     "signal": "Hold / Watch",
-    "zone": "Overheated",
-    "dividendYield": 3.9,
-    "quality": 87,
-    "value": 48,
-    "momentum": 62,
-    "income": 78,
-    "summary": "High-quality Australian bank with strong profitability, but valuation can become stretched."
+    "summary": "Large Australian bank."
   },
   {
     "symbol": "BHP.AX",
@@ -77,17 +49,10 @@
     "type": "Share",
     "sector": "Materials",
     "price": 44.08,
-    "changePct": 0.11,
     "rating": 76,
     "risk": "Medium-High",
     "signal": "Watch",
-    "zone": "Fair Value",
-    "dividendYield": 5.1,
-    "quality": 82,
-    "value": 72,
-    "momentum": 58,
-    "income": 85,
-    "summary": "Global resources company exposed to iron ore, copper, and industrial demand."
+    "summary": "Global resources company."
   },
   {
     "symbol": "WES.AX",
@@ -95,16 +60,64 @@
     "type": "Share",
     "sector": "Consumer/Retail",
     "price": 64.2,
-    "changePct": 0.15,
     "rating": 74,
     "risk": "Medium",
     "signal": "Hold / Watch",
-    "zone": "Fair Value",
-    "dividendYield": 2.8,
-    "quality": 88,
-    "value": 52,
-    "momentum": 70,
-    "income": 55,
-    "summary": "Diversified Australian retailer and industrial group. Generally high quality, but valuation discipline is important."
+    "summary": "Diversified Australian retailer."
+  },
+  {
+    "symbol": "AAPL",
+    "name": "Apple Inc.",
+    "type": "Share",
+    "sector": "Technology",
+    "price": 189.98,
+    "rating": 82,
+    "risk": "Medium",
+    "signal": "Watch",
+    "summary": "Global consumer technology company."
+  },
+  {
+    "symbol": "MSFT",
+    "name": "Microsoft Corporation",
+    "type": "Share",
+    "sector": "Technology",
+    "price": 421.12,
+    "rating": 87,
+    "risk": "Medium",
+    "signal": "Strong Watch",
+    "summary": "Software, cloud and AI infrastructure company."
+  },
+  {
+    "symbol": "TSLA",
+    "name": "Tesla Inc.",
+    "type": "Share",
+    "sector": "Automotive / Technology",
+    "price": 178.35,
+    "rating": 61,
+    "risk": "High",
+    "signal": "Speculative Watch",
+    "summary": "Electric vehicle and energy company."
+  },
+  {
+    "symbol": "BRK.B",
+    "name": "Berkshire Hathaway Class B",
+    "type": "Share",
+    "sector": "Diversified Holding Company",
+    "price": 409.75,
+    "rating": 85,
+    "risk": "Medium",
+    "signal": "Strong Watch",
+    "summary": "Diversified holding company."
+  },
+  {
+    "symbol": "NVDA",
+    "name": "NVIDIA Corporation",
+    "type": "Share",
+    "sector": "Semiconductors / AI",
+    "price": 924.79,
+    "rating": 83,
+    "risk": "High",
+    "signal": "Watch",
+    "summary": "Semiconductor and AI infrastructure company."
   }
 ]

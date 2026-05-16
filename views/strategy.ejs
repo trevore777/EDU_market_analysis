@@ -1,0 +1,122 @@
+<section class="page-head">
+  <h1>Auto Strategy Lab</h1>
+  <p>Sandbox-only rule trading. It can analyse signals and, when enabled, place fake buy/sell trades in your paper portfolio.</p>
+</section>
+
+<% if (message) { %><div class="success"><%= message %></div><% } %>
+<% if (error) { %><div class="error"><%= error %></div><% } %>
+
+<section class="grid four">
+  <div class="metric"><span>Sandbox value</span><strong>$<%= stats.totalValue.toFixed(2) %></strong></div>
+  <div class="metric"><span>Virtual cash</span><strong>$<%= Number(stats.account.cash_balance).toFixed(2) %></strong></div>
+  <div class="metric"><span>Active holdings</span><strong><%= stats.rows.length %></strong></div>
+  <div class="metric"><span>Strategy status</span><strong><%= Number(dashboard.settings.enabled) ? "Enabled" : "Analysis only" %></strong></div>
+</section>
+
+<section class="grid two">
+  <div class="card">
+    <h2>Strategy rules</h2>
+    <form method="POST" action="/strategy/settings" class="stack">
+      <label class="check-row">
+        <input type="checkbox" name="enabled" value="1" <%= Number(dashboard.settings.enabled) ? "checked" : "" %>>
+        Allow fake trades when I press “Run and execute”
+      </label>
+
+      <label>Symbols to check</label>
+      <textarea name="symbols" rows="4" placeholder="AAPL, NVDA, IVV.AX"><%= dashboard.settings.symbols %></textarea>
+      <small>Use commas or new lines. ASX examples: IVV.AX, CBA.AX, BHP.AX. US examples: AAPL, NVDA, MSFT.</small>
+
+      <div class="grid two compact-grid">
+        <div>
+          <label>Short moving average</label>
+          <input name="short_window" type="number" min="2" value="<%= dashboard.settings.short_window %>">
+        </div>
+        <div>
+          <label>Long moving average</label>
+          <input name="long_window" type="number" min="3" value="<%= dashboard.settings.long_window %>">
+        </div>
+      </div>
+
+      <div class="grid three compact-grid">
+        <div>
+          <label>Max position %</label>
+          <input name="max_position_pct" type="number" min="1" max="50" step="0.5" value="<%= dashboard.settings.max_position_pct %>">
+        </div>
+        <div>
+          <label>Stop loss %</label>
+          <input name="stop_loss_pct" type="number" min="1" max="50" step="0.5" value="<%= dashboard.settings.stop_loss_pct %>">
+        </div>
+        <div>
+          <label>Take profit %</label>
+          <input name="take_profit_pct" type="number" min="1" max="100" step="0.5" value="<%= dashboard.settings.take_profit_pct %>">
+        </div>
+      </div>
+
+      <button>Save strategy settings</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Run strategy</h2>
+    <p class="muted">The rule is simple: buy when the short moving average is above the long moving average. Sell when the trend turns negative, stop-loss is hit, or take-profit is hit.</p>
+
+    <form method="POST" action="/strategy/run" class="stack action-stack">
+      <button name="execute" value="0" class="secondary">Analyse only</button>
+      <button name="execute" value="1">Run and execute fake trades</button>
+    </form>
+
+    <div class="strategy-warning">
+      This is not a wealth machine. It is a paper-trading rules engine for testing ideas and showing risk.
+    </div>
+  </div>
+</section>
+
+<% if (result) { %>
+<section class="card">
+  <h2>Latest strategy result</h2>
+  <div class="table-card inner">
+    <table>
+      <thead>
+        <tr><th>Symbol</th><th>Action</th><th>Price</th><th>Short MA</th><th>Long MA</th><th>Executed</th><th>Reason</th></tr>
+      </thead>
+      <tbody>
+        <% result.signals.forEach(s => { %>
+          <tr>
+            <td><strong><%= s.symbol %></strong></td>
+            <td><span class="pill <%= String(s.action).toLowerCase() %>"><%= s.action %></span></td>
+            <td>$<%= Number(s.price || 0).toFixed(2) %></td>
+            <td>$<%= Number(s.shortMa || 0).toFixed(2) %></td>
+            <td>$<%= Number(s.longMa || 0).toFixed(2) %></td>
+            <td><%= s.executed ? "Yes" : "No" %></td>
+            <td><%= s.reason %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>
+<% } %>
+
+<section class="grid two">
+  <div class="card">
+    <h2>Recent signals</h2>
+    <% if (!dashboard.recentSignals.length) { %><p>No strategy signals yet.</p><% } %>
+    <% dashboard.recentSignals.forEach(s => { %>
+      <div class="trade-row <%= String(s.action).toLowerCase() %>">
+        <strong><%= s.action %> <%= s.symbol %></strong>
+        <small>$<%= Number(s.price || 0).toFixed(2) %> — <%= s.reason || "No reason recorded" %> <%= Number(s.executed) ? "— executed" : "" %></small>
+      </div>
+    <% }) %>
+  </div>
+
+  <div class="card">
+    <h2>Recent runs</h2>
+    <% if (!dashboard.recentRuns.length) { %><p>No strategy runs yet.</p><% } %>
+    <% dashboard.recentRuns.forEach(r => { %>
+      <div class="trade-row">
+        <strong><%= r.status %></strong>
+        <small><%= r.summary %> — <%= r.created_at %></small>
+      </div>
+    <% }) %>
+  </div>
+</section>

@@ -1,0 +1,37 @@
+[
+  {
+    "id": "explain_simple",
+    "category": "Beginner",
+    "label": "Explain this share in simple terms"
+  },
+  {
+    "id": "risks",
+    "category": "Risk",
+    "label": "What are the biggest risks?"
+  },
+  {
+    "id": "valuation",
+    "category": "Value",
+    "label": "Does it look expensive or undervalued?"
+  },
+  {
+    "id": "diversification",
+    "category": "Portfolio",
+    "label": "Would this improve diversification?"
+  },
+  {
+    "id": "income_growth",
+    "category": "Goal",
+    "label": "Is this better for dividends or growth?"
+  },
+  {
+    "id": "compare",
+    "category": "Comparison",
+    "label": "Compare two shares/ETFs"
+  },
+  {
+    "id": "live_movement",
+    "category": "Live Data",
+    "label": "What does the live quote suggest?"
+  }
+]
