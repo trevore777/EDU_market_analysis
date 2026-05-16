@@ -29,6 +29,7 @@ import {
   getCandles,
   getKunpengClientConfig
 } from "./services/kunpengService.js";
+import { getStrategyDashboard, saveStrategySettings, runAutoStrategy } from "./services/strategyService.js";
 
 dotenv.config();
 
@@ -290,6 +291,50 @@ app.post("/sandbox/sell", requireLogin, async (req,res)=>{
 });
 
 app.post("/sandbox/reset", requireLogin, async (req,res)=>{ await resetSandbox(req.user.id); res.redirect("/sandbox?message=Sandbox reset"); });
+
+app.get("/strategy", requireLogin, async (req, res) => {
+  res.render("strategy", {
+    title: "Auto Strategy Lab",
+    dashboard: await getStrategyDashboard(req.user.id),
+    stats: await sandboxStats(req.user.id),
+    result: null,
+    message: req.query.message || null,
+    error: req.query.error || null
+  });
+});
+
+app.post("/strategy/settings", requireLogin, async (req, res) => {
+  try {
+    await saveStrategySettings(req.user.id, req.body);
+    res.redirect("/strategy?message=" + encodeURIComponent("Strategy settings saved"));
+  } catch (err) {
+    res.redirect("/strategy?error=" + encodeURIComponent(err.message));
+  }
+});
+
+app.post("/strategy/run", requireLogin, async (req, res) => {
+  try {
+    const execute = req.body.execute === "1";
+    const result = await runAutoStrategy(req.user.id, { execute });
+    res.render("strategy", {
+      title: "Auto Strategy Lab",
+      dashboard: await getStrategyDashboard(req.user.id),
+      stats: await sandboxStats(req.user.id),
+      result,
+      message: result.summary,
+      error: null
+    });
+  } catch (err) {
+    res.render("strategy", {
+      title: "Auto Strategy Lab",
+      dashboard: await getStrategyDashboard(req.user.id),
+      stats: await sandboxStats(req.user.id),
+      result: null,
+      message: null,
+      error: err.message
+    });
+  }
+});
 
 app.get("/coach", requireLogin, (req,res)=>res.render("coach",{title:"AI Coach", answer:null, question:""}));
 

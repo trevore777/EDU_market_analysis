@@ -82,6 +82,38 @@ export async function migrate() {
       profile_json TEXT,
       search_json TEXT,
       updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )`,
+    `CREATE TABLE IF NOT EXISTS auto_strategy_settings (
+      user_id INTEGER PRIMARY KEY,
+      enabled INTEGER NOT NULL DEFAULT 0,
+      symbols TEXT NOT NULL DEFAULT '',
+      short_window INTEGER NOT NULL DEFAULT 5,
+      long_window INTEGER NOT NULL DEFAULT 20,
+      max_position_pct REAL NOT NULL DEFAULT 10,
+      stop_loss_pct REAL NOT NULL DEFAULT 5,
+      take_profit_pct REAL NOT NULL DEFAULT 10,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )`,
+    `CREATE TABLE IF NOT EXISTS auto_strategy_runs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      status TEXT NOT NULL,
+      summary TEXT DEFAULT '',
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )`,
+    `CREATE TABLE IF NOT EXISTS auto_strategy_signals (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      run_id INTEGER,
+      symbol TEXT NOT NULL,
+      action TEXT NOT NULL,
+      price REAL NOT NULL DEFAULT 0,
+      short_ma REAL NOT NULL DEFAULT 0,
+      long_ma REAL NOT NULL DEFAULT 0,
+      reason TEXT DEFAULT '',
+      executed INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )`
   ];
 
