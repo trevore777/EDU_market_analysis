@@ -134,6 +134,58 @@ export function fromKunpengSymbol(symbol) {
   return ticker || s;
 }
 
+export function getExchangeInfo(symbol) {
+  const instrument = getKunpengInstrument(symbol);
+  const ticker = instrument.ticker;
+  const exchange = instrument.exchange;
+
+  if (exchange === ASX_EXCHANGE) {
+    return {
+      exchange,
+      market: instrument.market,
+      label: `${ticker} on ASX`,
+      exchangeName: "Australian Securities Exchange",
+      exchangeHomeUrl: "https://www.asx.com.au/",
+      quoteUrl: `https://www.google.com/finance/quote/${encodeURIComponent(ticker)}:ASX`,
+      graphUrl: `https://www.google.com/finance/quote/${encodeURIComponent(ticker)}:ASX`
+    };
+  }
+
+  if (exchange === "NASDAQ") {
+    return {
+      exchange,
+      market: instrument.market,
+      label: `${ticker} on NASDAQ`,
+      exchangeName: "Nasdaq",
+      exchangeHomeUrl: "https://www.nasdaq.com/",
+      quoteUrl: `https://www.nasdaq.com/market-activity/stocks/${encodeURIComponent(ticker.toLowerCase())}`,
+      graphUrl: `https://www.nasdaq.com/market-activity/stocks/${encodeURIComponent(ticker.toLowerCase())}`
+    };
+  }
+
+  if (exchange === "NYSE") {
+    return {
+      exchange,
+      market: instrument.market,
+      label: `${ticker} on NYSE`,
+      exchangeName: "New York Stock Exchange",
+      exchangeHomeUrl: "https://www.nyse.com/",
+      quoteUrl: `https://www.google.com/finance/quote/${encodeURIComponent(ticker)}:NYSE`,
+      graphUrl: `https://www.google.com/finance/quote/${encodeURIComponent(ticker)}:NYSE`
+    };
+  }
+
+  return {
+    exchange,
+    market: instrument.market,
+    label: `${ticker} on ${exchange}`,
+    exchangeName: exchange,
+    exchangeHomeUrl: "#",
+    quoteUrl: `https://www.google.com/finance/search?q=${encodeURIComponent(ticker + " " + exchange)}`,
+    graphUrl: `https://www.google.com/finance/search?q=${encodeURIComponent(ticker + " " + exchange)}`
+  };
+}
+
 export function getLocalProfile(symbol, stock = null) {
   const clean = cleanSymbol(symbol);
   const instrument = getKunpengInstrument(clean);
@@ -145,11 +197,13 @@ export function getLocalProfile(symbol, stock = null) {
   };
 
   const isAsx = instrument.exchange === ASX_EXCHANGE;
+  const exchangeInfo = getExchangeInfo(clean);
 
   return {
     symbol: clean,
     kunpengSymbol: instrument.symbol,
     source: "local-profile",
+    exchangeInfo,
     profile: {
       name: local.name || clean,
       country: isAsx ? "Australia" : "United States",
@@ -174,6 +228,7 @@ export async function getLiveQuote(symbol) {
     kunpengSymbol: instrument.symbol,
     market: instrument.market,
     exchange: instrument.exchange,
+    exchangeInfo: getExchangeInfo(clean),
     source: "local-until-kunpeng-websocket-tick",
     quote: {
       c: price,
@@ -197,6 +252,7 @@ export async function searchLiveSymbols(query) {
       kunpengSymbol: instrument.symbol,
       market: instrument.market,
       exchange: instrument.exchange,
+      exchangeInfo: getExchangeInfo(s.symbol),
       summary: s.summary || "Local symbol. Live prices update through Kunpeng WebSocket when opened."
     };
   });
@@ -215,6 +271,7 @@ export async function getCandles(symbol, days = 90) {
     kunpengSymbol: instrument.symbol,
     market: instrument.market,
     exchange: instrument.exchange,
+    exchangeInfo: getExchangeInfo(clean),
     source: "local-history-plus-kunpeng-live-updates",
     message: `Graph seeded locally. Kunpeng live subscription will use ${instrument.market} / ${instrument.exchange} / ${instrument.symbol}.`,
     points: buildPriceHistory(clean, Number(days || 90)).map((p) => ({
@@ -251,6 +308,7 @@ export function getKunpengClientConfig(symbol) {
     exchange: instrument.exchange,
     ticker: instrument.ticker,
     symbol: instrument.symbol,
+    exchangeInfo: getExchangeInfo(clean),
     replay: "last",
     appSymbol: clean,
     message: TOKEN
