@@ -1,1 +1,60 @@
-<section class="page-head"><h1><%= stock.symbol %> — <%= stock.name %></h1><p><%= stock.summary %></p></section><section class="grid two"><div class="card"><h2>Live Quote</h2><% if (liveQuote && liveQuote.quote) { const q = liveQuote.quote; %><div class="big-score">$<%= Number(q.c || 0).toFixed(2) %></div><p><strong>Source:</strong> <%= liveQuote.source %></p><p><strong>Open:</strong> $<%= Number(q.o || 0).toFixed(2) %></p><p><strong>High:</strong> $<%= Number(q.h || 0).toFixed(2) %></p><p><strong>Low:</strong> $<%= Number(q.l || 0).toFixed(2) %></p><p><strong>Previous close:</strong> $<%= Number(q.pc || 0).toFixed(2) %></p><% } else { %><p>No live quote available. Check Finnhub key or limits.</p><% } %></div><div class="card"><h2>Sandbox action</h2><% if (user) { %><form method="POST" action="/sandbox/buy" class="stack"><input type="hidden" name="symbol" value="<%= stock.symbol %>"><label>Units</label><input name="units" type="number" step="0.0001" value="1"><label>Reason</label><input name="reason"><button>Fake Buy using live quote if available</button></form><a class="button secondary wide-link" href="/search?symbol=<%= stock.symbol %>&q=<%= stock.symbol %>">Ask guided AI questions</a><% } else { %><p><a href="/login">Login</a> to use sandbox trading.</p><% } %></div></section><section class="card"><h2>Company Profile</h2><% if (profile && profile.profile && profile.profile.name) { %><p><strong>Name:</strong> <%= profile.profile.name %></p><p><strong>Country:</strong> <%= profile.profile.country %></p><p><strong>Currency:</strong> <%= profile.profile.currency %></p><p><strong>Exchange:</strong> <%= profile.profile.exchange %></p><% } else { %><p>Profile unavailable.</p><% } %></section><section class="card"><h2>Price History Graph</h2><p class="hint">Graph is still sample-generated. Live historical candles can be added next.</p><div class="chart-wrap"><canvas id="stockChart" width="900" height="320" data-symbol="<%= stock.symbol %>"></canvas></div></section>
+<section class="page-head">
+  <h1><%= stock.symbol %> — <%= stock.name %></h1>
+  <p><%= stock.summary %></p>
+</section>
+
+<section class="grid two">
+  <div class="card">
+    <h2>Live Quote</h2>
+    <% if (liveQuote && liveQuote.quote) { const q = liveQuote.quote; %>
+      <div id="liveQuotePrice" class="big-score">$<%= Number(q.c || 0).toFixed(2) %></div>
+      <p><strong>Source:</strong> <span id="liveQuoteSource"><%= liveQuote.source %></span></p>
+      <p><strong>Open:</strong> <span id="liveQuoteOpen">$<%= Number(q.o || 0).toFixed(2) %></span></p>
+      <p><strong>High:</strong> <span id="liveQuoteHigh">$<%= Number(q.h || 0).toFixed(2) %></span></p>
+      <p><strong>Low:</strong> <span id="liveQuoteLow">$<%= Number(q.l || 0).toFixed(2) %></span></p>
+      <p><strong>Previous close:</strong> <span id="liveQuotePrevClose">$<%= Number(q.pc || 0).toFixed(2) %></span></p>
+      <p><strong>Change:</strong> <span id="liveQuoteChange">$<%= Number(q.ch || 0).toFixed(2) %> (<%= Number(q.chp || 0).toFixed(2) %>%)</span></p>
+      <p><strong>Last update:</strong> <span id="liveQuoteTime"><%= q.t ? new Date(Number(q.t) * 1000).toLocaleString() : "Waiting for Kunpeng tick" %></span></p>
+    <% } else { %>
+      <p>No quote available yet. Add your Kunpeng token and check market/exchange access.</p>
+    <% } %>
+    <p id="kunpengStatus" class="hint">Preparing Kunpeng realtime connection...</p>
+  </div>
+
+  <div class="card">
+    <h2>Sandbox action</h2>
+    <% if (user) { %>
+      <form method="POST" action="/sandbox/buy" class="stack">
+        <input type="hidden" name="symbol" value="<%= stock.symbol %>">
+        <label>Units</label>
+        <input name="units" type="number" step="0.0001" value="1">
+        <label>Reason</label>
+        <input name="reason">
+        <button>Fake Buy using latest available quote</button>
+      </form>
+      <a class="button secondary wide-link" href="/search?symbol=<%= stock.symbol %>&q=<%= stock.symbol %>">Ask guided AI questions</a>
+    <% } else { %>
+      <p><a href="/login">Login</a> to use sandbox trading.</p>
+    <% } %>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Company Profile</h2>
+  <% if (profile && profile.profile && profile.profile.name) { %>
+    <p><strong>Name:</strong> <%= profile.profile.name %></p>
+    <p><strong>Country:</strong> <%= profile.profile.country %></p>
+    <p><strong>Currency:</strong> <%= profile.profile.currency %></p>
+    <p><strong>Exchange:</strong> <%= profile.profile.exchange %></p>
+    <p><strong>Kunpeng symbol:</strong> <%= profile.kunpengSymbol %></p>
+    <p><strong>Source:</strong> <%= profile.source %></p>
+  <% } else { %>
+    <p>Profile unavailable.</p>
+  <% } %>
+</section>
+
+<section class="card">
+  <h2>Price History Graph</h2>
+  <p class="hint">The graph is seeded with local history, then updates from Kunpeng WebSocket ticks when your token, market and symbol are authorised.</p>
+  <div class="chart-wrap"><canvas id="stockChart" width="900" height="320" data-symbol="<%= stock.symbol %>"></canvas></div>
+</section>

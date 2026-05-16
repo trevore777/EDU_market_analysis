@@ -20,13 +20,15 @@ import {
   buildGuidedAnswer
 } from "./services/appService.js";
 import { buildPriceHistory, buildPortfolioHistory, buildTradeMarkers } from "./services/chartService.js";
-import { getLiveQuote, searchLiveSymbols, getCompanyProfile } from "./services/finnhubService.js";
-
 import { all } from "./db/db.js";
 import {
+  getLiveQuote,
+  searchLiveSymbols,
+  getLocalProfile,
   getMarketNews,
-  getCandles
-} from "./services/finnhubExtras.js";
+  getCandles,
+  getKunpengClientConfig
+} from "./services/kunpengService.js";
 
 dotenv.config();
 
@@ -35,7 +37,9 @@ console.log("PORT:", process.env.PORT);
 console.log("NODE_ENV:", process.env.NODE_ENV);
 console.log("TURSO_DATABASE_URL exists:", !!process.env.TURSO_DATABASE_URL);
 console.log("TURSO_AUTH_TOKEN exists:", !!process.env.TURSO_AUTH_TOKEN);
-console.log("FINNHUB_API_KEY exists:", !!process.env.FINNHUB_API_KEY);
+console.log("KUNPENG_TOKEN exists:", !!(process.env.KUNPENG_TOKEN || process.env.KUNPENG_API_KEY));
+console.log("KUNPENG_MARKET:", process.env.KUNPENG_MARKET || "AU");
+console.log("KUNPENG_EXCHANGE:", process.env.KUNPENG_EXCHANGE || "ASX");
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -93,7 +97,7 @@ app.get("/watchlist", requireLogin, async (req, res) => {
 app.get("/health", async (req,res)=>{
   try {
     await one("SELECT 1 AS ok", []);
-    res.json({ok:true, database:"connected", finnhub: !!process.env.FINNHUB_API_KEY});
+    res.json({ok:true, database:"connected", kunpeng: !!(process.env.KUNPENG_TOKEN || process.env.KUNPENG_API_KEY)});
   } catch (err) {
     res.status(500).json({ok:false, error:err.message});
   }
@@ -238,10 +242,14 @@ app.get("/stock/:symbol", async (req,res)=>{
   };
 
   let liveQuote = null;
-  let profile = null;
 
-  try { liveQuote = await getLiveQuote(stock.symbol); } catch (err) { console.error("Stock live quote failed:", err.message); }
-  try { profile = await getCompanyProfile(stock.symbol); } catch (err) { console.error("Profile failed:", err.message); }
+  try {
+    liveQuote = await getLiveQuote(stock.symbol);
+  } catch (err) {
+    console.error("Stock quote fallback failed:", err.message);
+  }
+
+  const profile = getLocalProfile(stock.symbol, stock);
 
   res.render("stock-detail",{title:stock.symbol, stock, liveQuote, profile});
 });
@@ -299,8 +307,11 @@ app.get("/api/live-quote/:symbol", async (req,res)=>{
 app.get("/api/live-search", async (req,res)=>res.json(await searchLiveSymbols(req.query.q || "")));
 
 app.get("/api/company-profile/:symbol", async (req,res)=>{
-  try { res.json(await getCompanyProfile(req.params.symbol)); }
-  catch (err) { res.status(500).json({error:err.message}); }
+  res.json(getLocalProfile(req.params.symbol));
+});
+
+app.get("/api/kunpeng/config/:symbol", async (req, res) => {
+  res.json(getKunpengClientConfig(req.params.symbol));
 });
 
 app.get("/api/chart/stock/:symbol",(req,res)=>res.json({points:buildPriceHistory(req.params.symbol)}));

@@ -130,7 +130,7 @@ export function buildGuidedAnswer({ promptId, symbol, compareSymbol, liveQuote }
     rating: 0,
     risk: "Unknown",
     signal: "Research",
-    summary: "Live searched symbol. Use external data and your own research."
+    summary: "Market searched symbol. Use external data and your own research."
   };
 
   const compare = findStock(compareSymbol);
@@ -150,13 +150,13 @@ export function buildGuidedAnswer({ promptId, symbol, compareSymbol, liveQuote }
   }
 
   if (promptId === "live_movement") {
-    if (!liveQuote?.quote) return { title: `Live quote for ${stock.symbol}`, summary: "No live quote available.", points: ["Check Finnhub API key or API limits."] };
+    if (!liveQuote?.quote) return { title: `Market quote for ${stock.symbol}`, summary: "No market quote available.", points: ["Check your market data API settings."] };
 
     const q = liveQuote.quote;
     const change = q.pc ? ((q.c - q.pc) / q.pc) * 100 : 0;
 
     return {
-      title: `Live quote check: ${stock.symbol}`,
+      title: `Market quote check: ${stock.symbol}`,
       summary: `Current price: $${Number(q.c).toFixed(2)}. Previous close: $${Number(q.pc || 0).toFixed(2)}.`,
       points: [
         `Daily change: ${change >= 0 ? "+" : ""}${change.toFixed(2)}%.`,
